@@ -1,9 +1,12 @@
-// 'use client';
+'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useSetAtom } from 'jotai';
 
+import { responsesAtom } from '@/lib/atoms';
+import { ResponseContainer } from '@/components/ResponseContainer';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -42,7 +45,8 @@ const FormSchema = z.object({
   exclude_domains: z.string().default('').optional(),
 });
 
-export function TextareaForm({ setData, data }: { setData: any, data: any }) {
+export function TextareaForm() {
+  const setResponses = useSetAtom(responsesAtom);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -65,25 +69,18 @@ export function TextareaForm({ setData, data }: { setData: any, data: any }) {
       ),
     })*/
 
-    // const params = new URLSearchParams();
-    // if (data.search_depth) params.append('search_depth', data.search_depth);
-    // if (data.include_images) params.append('include_images', data.include_images.toString());
-    // if (data.include_answer) params.append('include_answer', data.include_answer.toString());
-    // if (data.max_results) params.append('max_results', data.max_results.toString());
-    // if (data.include_domains) params.append('include_domains', data.include_domains);
-    // if (data.exclude_domains) params.append('exclude_domains', data.exclude_domains);
 
     console.log(`You submitted the following ${JSON.stringify(data, null, 2)}`);
-    // console.log(`You submitted the following Params ${params}`);
+
     const handleClickPOST = async () => {
       try {
         const res = await fetch(`/api/sage`, {
           method: 'POST',
           body: JSON.stringify(data),
         });
-        const dt = await res.json();
+        const dt: unknown = await res.json();
         console.log(dt);
-        setData(JSON.stringify(dt));
+        setResponses((resp) => [...resp, dt]);
       } catch (error) {
         console.error(error);
       }
@@ -97,65 +94,37 @@ export function TextareaForm({ setData, data }: { setData: any, data: any }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-auto space-y-6 grid grid-cols-[2fr_1fr] gap-4"
       >
-        <div className='grid grid-rows-[70vh_25vh] gap-4 w-full'>
-          <div className='overflow-y-auto'>
-          <div className='max-h-full overflow-y-auto'>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
-            <pre>{data}</pre>
+        <div className="grid grid-rows-[70vh_25vh] gap-4 w-full">
+          <div className="overflow-y-auto">
+            <div className="flex flex-col gap-4 max-h-full overflow-y-auto scrollbar ">
+              {/* <ScrollArea className="max-h-full overflow-y-auto"> */}
+                <ResponseContainer setValue={form.setValue} />
+                {/* <ScrollBar orientation="vertical" /> */}
+              {/* </ScrollArea> */}
+            </div>
           </div>
-          </div>
-          <div className='grid grid-cols-[1fr_auto] gap-4'>
+          <div className="grid grid-cols-[1fr_auto] gap-4">
             <FormField
               control={form.control}
               name="query"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Query</FormLabel>
+                  {/* <FormLabel>Query</FormLabel> */}
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us a little bit about yourself"
+                      placeholder="Search for information"
                       className="resize-none"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    You can <span>@mention</span> other users and organizations.
+                    You can type in questions/article/links.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>Submit</Button>
           </div>
         </div>
         <div className="flex flex-col gap-4">
@@ -227,7 +196,7 @@ export function TextareaForm({ setData, data }: { setData: any, data: any }) {
             name="max_results"
             render={({ field }) => (
               <FormItem className="flex flex-col items-start gap-2 rounded-md border p-4">
-                <div className='w-full flex flex-row items-center justify-between'>
+                <div className="w-full flex flex-row items-center justify-between">
                   <FormLabel>Max Links</FormLabel>
                   <span>{field.value}</span>
                 </div>
@@ -237,7 +206,7 @@ export function TextareaForm({ setData, data }: { setData: any, data: any }) {
                     min={1}
                     max={50}
                     step={1}
-                    // onChange={field.onChange} 
+                    // onChange={field.onChange}
                     onValueChange={(value) => field.onChange(value[0])}
                   />
                 </FormControl>
@@ -251,37 +220,31 @@ export function TextareaForm({ setData, data }: { setData: any, data: any }) {
             name="include_domains"
             render={({ field }) => (
               <FormItem className="flex flex-col items-start rounded-md border p-4">
-                  <FormLabel className="mb-4">Include domains</FormLabel>
+                <FormLabel className="mb-4">Include domains</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="example.com, wikipedia.org"
-                    {...field}
-                  />
+                  <Input placeholder="example.com, wikipedia.org" {...field} />
                 </FormControl>
-                  <FormDescription className='text-xs'>
-                    Seperate multiple domains with a comma (,)
-                  </FormDescription>
-                  <FormMessage />
+                <FormDescription className="text-xs">
+                  Seperate multiple domains with a comma (,)
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="exclude_domains"
             render={({ field }) => (
               <FormItem className="flex flex-col items-start rounded-md border p-4">
-                  <FormLabel className="mb-4">Exclude domains</FormLabel>
+                <FormLabel className="mb-4">Exclude domains</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="example.com, wikipedia.org"
-                    {...field}
-                  />
+                  <Input placeholder="example.com, wikipedia.org" {...field} />
                 </FormControl>
-                  <FormDescription  className='text-xs'>
-                    Seperate multiple domains with a comma (,)
-                  </FormDescription>
-                  <FormMessage />
+                <FormDescription className="text-xs">
+                  Seperate multiple domains with a comma (,)
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
