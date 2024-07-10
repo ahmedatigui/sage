@@ -69,14 +69,20 @@ export function TextareaForm() {
       ),
     })*/
 
+    const body = {
+      ...data,
+      query: data.query.trim(),
+      include_domains: data.include_domains?.split(','),
+      exclude_domains: data.exclude_domains?.split(','),
+    };
 
-    console.log(`You submitted the following ${JSON.stringify(data, null, 2)}`);
+    console.log(`You submitted the following ${JSON.stringify(body, null, 2)}`);
 
     const handleClickPOST = async () => {
       try {
         const res = await fetch(`/api/sage`, {
           method: 'POST',
-          body: JSON.stringify(data),
+          body: JSON.stringify(body),
         });
         const dt: unknown = await res.json();
         console.log(dt);
@@ -98,8 +104,8 @@ export function TextareaForm() {
           <div className="overflow-y-auto">
             <div className="flex flex-col gap-4 max-h-full overflow-y-auto scrollbar ">
               {/* <ScrollArea className="max-h-full overflow-y-auto"> */}
-                <ResponseContainer setValue={form.setValue} />
-                {/* <ScrollBar orientation="vertical" /> */}
+              <ResponseContainer setValue={form.setValue} />
+              {/* <ScrollBar orientation="vertical" /> */}
               {/* </ScrollArea> */}
             </div>
           </div>
@@ -109,7 +115,6 @@ export function TextareaForm() {
               name="query"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Query</FormLabel> */}
                   <FormControl>
                     <Textarea
                       placeholder="Search for information"
@@ -124,7 +129,9 @@ export function TextareaForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={form.formState.isSubmitting}>Submit</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              Submit
+            </Button>
           </div>
         </div>
         <div className="flex flex-col gap-4">
