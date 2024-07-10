@@ -1,4 +1,4 @@
-import { TextareaForm } from "@/components/TextAreaForm";
+import { TextareaForm } from '@/components/TextAreaForm';
 
 export default function Home() {
   return (

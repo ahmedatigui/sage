@@ -1,0 +1,8 @@
+components/ui/
+node_modules/
+public/
+dist/
+coverage/
+.next/
+.env
+*.md
