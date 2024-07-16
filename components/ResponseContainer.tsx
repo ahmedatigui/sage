@@ -23,21 +23,21 @@ export function ResponseContainer({ setValue }: { setValue: any }) {
               </h2>
               <ScrollArea className="max-h-96 overflow-y-auto">
                 <div className="flex w-max space-x-4 p-4">
-                  {response?.results?.map((result: any, index: number) => (
+                  {response?.sources?.map((source: any, index: number) => (
                     <a
                       className="flex h-24 w-48 select-none flex-col justify-end rounded-md bg-slate-50 p-6 no-underline outline-none cursor-pointer hover:bg-slate-100 focus:shadow-md"
-                      href={result.url}
+                      href={source.url}
                       key={index}
                     >
                       <div className="flex gap-2 mb-2 mt-4 text-sm font-medium">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={result.url} />
-                          <AvatarFallback>{result.title}</AvatarFallback>
+                          <AvatarImage src={source.url} />
+                          <AvatarFallback>{source.title}</AvatarFallback>
                         </Avatar>
-                        <span>{result.title}</span>
+                        <span>{source.title}</span>
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        {`${result?.content?.slice(0, 10)}...`}
+                        {`${source?.content?.slice(0, 10)}...`}
                       </p>
                     </a>
                   ))}

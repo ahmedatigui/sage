@@ -80,7 +80,7 @@ export function TextareaForm() {
 
     const handleClickPOST = async () => {
       try {
-        const res = await fetch(`/api/sage`, {
+        const res = await fetch('/api/sage', {
           method: 'POST',
           body: JSON.stringify(body),
         });
@@ -103,10 +103,7 @@ export function TextareaForm() {
         <div className="grid grid-rows-[70vh_25vh] gap-4 w-full">
           <div className="overflow-y-auto">
             <div className="flex flex-col gap-4 max-h-full overflow-y-auto scrollbar ">
-              {/* <ScrollArea className="max-h-full overflow-y-auto"> */}
               <ResponseContainer setValue={form.setValue} />
-              {/* <ScrollBar orientation="vertical" /> */}
-              {/* </ScrollArea> */}
             </div>
           </div>
           <div className="grid grid-cols-[1fr_auto] gap-4">

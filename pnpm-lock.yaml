@@ -11,6 +11,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.52.1(react@18.3.1))
+      '@huggingface/inference':
+        specifier: ^2.7.0
+        version: 2.7.0
       '@radix-ui/react-avatar':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -129,6 +132,13 @@ packages:
     resolution: {integrity: sha512-bU0Gr4EepJ/EQsH/IwEzYLsT/PEj5C0ynLQ4m+GSHS+xKH4TfSelhluTgOaoc4kA5s7eCsQbM4wvZLzELmWzUg==}
     peerDependencies:
       react-hook-form: ^7.0.0
+
+  '@huggingface/inference@2.7.0':
+    resolution: {integrity: sha512-u7Fn637Q3f7nUB1tajM4CgzhvoFQkOQr5W5Fm+2wT9ETgGoLBh25BLlYPTJRjAd2WY01s71v0lqAwNvHHCc3mg==}
+    engines: {node: '>=18'}
+
+  '@huggingface/tasks@0.10.22':
+    resolution: {integrity: sha512-sCtp+A6sq6NXoUU7NXuXWoVNNjKddk1GTQIh3cJ6illF8S4zmFoerCVRvFf19BdgICGvF+RVZiv9sGGK9KRDTg==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -1904,6 +1914,12 @@ snapshots:
   '@hookform/resolvers@3.9.0(react-hook-form@7.52.1(react@18.3.1))':
     dependencies:
       react-hook-form: 7.52.1(react@18.3.1)
+
+  '@huggingface/inference@2.7.0':
+    dependencies:
+      '@huggingface/tasks': 0.10.22
+
+  '@huggingface/tasks@0.10.22': {}
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
