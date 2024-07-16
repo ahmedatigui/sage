@@ -38,7 +38,7 @@ const FormSchema = z.object({
       required_error: 'You need to select a notification type.',
     })
     .default('basic'),
-  include_images: z.boolean().default(false).optional(),
+  // include_images: z.boolean().default(false).optional(),
   include_answer: z.boolean().default(true).optional(),
   max_results: z.number().min(1).max(50).default(5),
   include_domains: z.string().default('').optional(),
@@ -51,7 +51,7 @@ export function TextareaForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       search_depth: 'basic',
-      include_images: false,
+      // include_images: false,
       include_answer: true,
       max_results: 5,
       include_domains: '',
@@ -163,7 +163,7 @@ export function TextareaForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="include_images"
             render={({ field }) => (
@@ -178,7 +178,7 @@ export function TextareaForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="include_answer"

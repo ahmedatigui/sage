@@ -15,7 +15,6 @@ export async function POST(request: Request) {
   console.log('reqbody: ', reqbody);
 
   try {
-
     // Handle Tavily API call
     const tavily = await fetch(`${process.env.TAVILY_API_ENDPOINT}`, {
       method: 'POST',
@@ -25,7 +24,7 @@ export async function POST(request: Request) {
       },
     });
     const tavilyData = await tavily.json();
-    console.log("tavilyData: ", tavilyData);
+    console.log('tavilyData: ', tavilyData);
 
     // Prepare GPT prompt
     const prompt = prepareGPTPrompt(tavilyData);
@@ -39,31 +38,34 @@ export async function POST(request: Request) {
       },
     });
     const gptData = await gpt.json();
-    console.log("SAGE response: ", gptData);
+    console.log('SAGE response: ', gptData);
 
     // Prepare response object
-    const response = { 
-      query: tavilyData.query, 
+    const response = {
+      query: tavilyData.query,
       answer: gptData.choices[0].message.content,
       sources: tavilyData.results,
       questions: tavilyData.follow_up_questions,
     };
 
     return new Response(JSON.stringify(response));
-
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify(error));
   }
-
 }
 
-
 function prepareGPTPrompt(tavilyData: any) {
-  let query = tavilyData?.query ?? "";
-  let answer = tavilyData?.answer ??"";
-  let sources = tavilyData?.results ?? "";
+  let query = tavilyData?.query ?? '';
+  let answer = tavilyData?.answer ?? '';
+  let sources = tavilyData?.results ?? '';
 
-  const prompt = "You are a helpful assistant. You are given a query and answer and source of the answer. Create a paragraph based on that.\n\nQuery:\n" + query + "\n\Answer:\n" + answer + "\n\Sources:\n" + JSON.stringify(sources);
+  const prompt =
+    'You are a helpful assistant. You are given a query and answer and source of the answer. Create a paragraph based on that.\n\nQuery:\n' +
+    query +
+    '\nAnswer:\n' +
+    answer +
+    '\nSources:\n' +
+    JSON.stringify(sources);
   return prompt;
 }

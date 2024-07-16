@@ -25,19 +25,21 @@ export function ResponseContainer({ setValue }: { setValue: any }) {
                 <div className="flex w-max space-x-4 p-4">
                   {response?.sources?.map((source: any, index: number) => (
                     <a
-                      className="flex h-24 w-48 select-none flex-col justify-end rounded-md bg-slate-50 p-6 no-underline outline-none cursor-pointer hover:bg-slate-100 focus:shadow-md"
+                      className="flex h-24 w-56 select-none flex-col justify-end rounded-md bg-slate-50 p-6 no-underline outline-none cursor-pointer hover:bg-slate-100 focus:shadow-md"
                       href={source.url}
                       key={index}
                     >
-                      <div className="flex gap-2 mb-2 mt-4 text-sm font-medium">
+                      <div className="flex gap-2 mb-2 mt-4 text-xs font-medium">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={source.url} />
+                          <AvatarImage
+                            src={`https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${source.url}&size=16`}
+                          />
                           <AvatarFallback>{source.title}</AvatarFallback>
                         </Avatar>
-                        <span>{source.title}</span>
+                        <span>{`${source.title.slice(0, 30)}...`}</span>
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        {`${source?.content?.slice(0, 10)}...`}
+                        {`${new URL(source?.url).hostname}`}
                       </p>
                     </a>
                   ))}
