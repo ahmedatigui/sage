@@ -1,6 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { useAtomValue } from 'jotai';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { responsesAtom } from '@/lib/atoms';
@@ -23,7 +29,7 @@ export function ResponseContainer({ setValue }: { setValue: any }) {
               </h2>
               <ScrollArea className="max-h-96 overflow-y-auto">
                 <div className="flex w-max space-x-4 p-4">
-                  {response?.sources?.map((source: any, index: number) => (
+                  {response.response?.sources?.map((source: any, index: number) => (
                     <a
                       className="flex h-24 w-56 select-none flex-col justify-end rounded-md bg-slate-50 p-6 no-underline outline-none cursor-pointer hover:bg-slate-100 focus:shadow-md"
                       href={source.url}
@@ -49,14 +55,41 @@ export function ResponseContainer({ setValue }: { setValue: any }) {
             </div>
             <div className="answer">
               <h2 className="scroll-m-20 border-b pb-2 mb-4 text-3xl font-semibold tracking-tight first:mt-0">
-                Answer
+                {response.query} 
               </h2>
-              <p className="leading-7 [&:not(:first-child)]:mt-6">
-                {response?.answer}
-              </p>
+              <div className="markdown-content leading-7 [&:not(:first-child)]:mt-6">
+                <Markdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+          code({ inline, className, children }) {
+            const match = /language-(\w+)/.exec(className || '');
+            const language = match ? match[1] : '';
+
+            // If it's inline code, return it without the CodeBlock wrapper
+            if (inline) {
+              return (
+                <code className={className}>
+                  {children}
+                </code>
+              );
+            }
+
+            // Return the CodeBlock for code blocks, ensuring no nested elements
+            return (
+              <CodeBlock language={language}>
+                {String(children).replace(/\n$/, '')} {/* Clean up any trailing new lines */}
+              </CodeBlock>
+            );
+          },
+        }}
+
+                >
+                  {response.response?.answer}
+                </Markdown>
+              </div>
             </div>
 
-            <div className="questions">
+            {/*<div className="questions">
               <h2 className="scroll-m-20 border-b pb-2 mb-4 text-3xl font-semibold tracking-tight first:mt-0">
                 Questions
               </h2>
@@ -73,9 +106,33 @@ export function ResponseContainer({ setValue }: { setValue: any }) {
                   )
                 )}
               </ul>
-            </div>
+            </div>*/}
           </div>
         ))}
     </>
   );
 }
+
+
+
+const CodeBlock = ({ children, language }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    console.log({children});
+    navigator.clipboard.writeText(children[0].trim());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="code-block-container">
+      <SyntaxHighlighter language={language} style={docco} customStyle={{ overflow: 'auto' }}>
+        {children}
+      </SyntaxHighlighter>
+      <button onClick={copyToClipboard} className="copy-button">
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  );
+};

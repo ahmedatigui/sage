@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -22,7 +23,26 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 //import { toast } from "@/components/ui/use-toast"
+
+const ModelOption = ['mistralai/Mistral-7B-Instruct-v0.2', 'HuggingFaceH4/zephyr-7b-beta', 'mistralai/Mistral-Nemo-Instruct-2407', 'NousResearch/Hermes-3-Llama-3.1-8B', 'google/gemma-2-2b-it', 'gemini-1.5-flash'];
+const modelOptions = [
+  { label: 'Mistral-7B-Instruct-v0.2', value: 'mistralai/Mistral-7B-Instruct-v0.2' },
+  { label: 'Zephyr-7b-beta', value: 'HuggingFaceH4/zephyr-7b-beta' },
+  { label: 'Mistral-Nemo-Instruct-2407', value: 'mistralai/Mistral-Nemo-Instruct-2407' },
+  { label: 'Hermes-3-Llama-3.1-8B', value: 'NousResearch/Hermes-3-Llama-3.1-8B' },
+  { label: 'gemma-2-2b-it', value: 'google/gemma-2-2b-it' },
+  { label: 'gemini-1.5-flash', value: 'gemini-1.5-flash' }
+];
 
 const FormSchema = z.object({
   query: z
@@ -33,12 +53,17 @@ const FormSchema = z.object({
     .max(600, {
       message: 'Query must not be longer than 600 characters.',
     }),
+  model: z
+    .enum(['mistralai/Mistral-7B-Instruct-v0.2', 'HuggingFaceH4/zephyr-7b-beta', 'mistralai/Mistral-Nemo-Instruct-2407', 'NousResearch/Hermes-3-Llama-3.1-8B', 'google/gemma-2-2b-it', 'gemini-1.5-flash'], {
+      required_error: 'You need to select a model type.',
+    })
+    .default('mistralai/Mistral-7B-Instruct-v0.2'),
+
   search_depth: z
     .enum(['basic', 'advanced'], {
-      required_error: 'You need to select a notification type.',
+      required_error: 'You need to select search_depth type.',
     })
     .default('basic'),
-  // include_images: z.boolean().default(false).optional(),
   include_answer: z.boolean().default(true).optional(),
   max_results: z.number().min(1).max(50).default(5),
   include_domains: z.string().default('').optional(),
@@ -46,18 +71,22 @@ const FormSchema = z.object({
 });
 
 export function TextareaForm() {
+  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState();
   const setResponses = useSetAtom(responsesAtom);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      query: '',
+      model: 'mistralai/Mistral-7B-Instruct-v0.2',
       search_depth: 'basic',
-      // include_images: false,
       include_answer: true,
       max_results: 5,
       include_domains: '',
       exclude_domains: '',
     },
   });
+  const responseContainerRef = useRef();
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     /*toast({
@@ -76,33 +105,47 @@ export function TextareaForm() {
       exclude_domains: data.exclude_domains?.split(','),
     };
 
+    form.resetField('query');
     console.log(`You submitted the following ${JSON.stringify(body, null, 2)}`);
 
     const handleClickPOST = async () => {
       try {
+        setLoading(true);
         const res = await fetch('/api/sage', {
           method: 'POST',
           body: JSON.stringify(body),
         });
         const dt: unknown = await res.json();
         console.log(dt);
-        setResponses((resp) => [...resp, dt]);
+
+        setLoading(false);
+
+        setResponses((resp) => [...resp, { response: dt, query: body.query }]);
+        responseContainerRef.current.scrollIntoView(false);
       } catch (error) {
+        setLoading(false);
         console.error(error);
       }
     };
     handleClickPOST();
   }
 
+  useEffect(() => {
+    responseContainerRef.current.scrollIntoView(false);
+  }, []);
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-auto space-y-6 grid grid-cols-[2fr_1fr] gap-4"
+        className="w-auto space-y-6 grid  gap-4 grid-cols-1 md:grid-cols-[2fr_1fr]"
       >
         <div className="grid grid-rows-[70vh_25vh] gap-4 w-full">
           <div className="overflow-y-auto">
-            <div className="flex flex-col gap-4 max-h-full overflow-y-auto scrollbar ">
+            <div
+              ref={responseContainerRef}
+              className="flex flex-col gap-4 max-h-full overflow-y-auto scrollbar"
+            >
               <ResponseContainer setValue={form.setValue} />
             </div>
           </div>
@@ -111,32 +154,62 @@ export function TextareaForm() {
               control={form.control}
               name="query"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full">
                   <FormControl>
                     <Textarea
-                      placeholder="Search for information"
+                      placeholder="What would you like to know?"
                       className="resize-none"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    You can type in questions/article/links.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              Submit
-            </Button>
+            { !loading ? (
+              <Button type="submit" disabled={loading}>Submit</Button>):
+              (<Button type="submit" disabled={loading}>Cancel</Button>)
+            }
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex md:flex-col gap-4 flex-row flex-wrap sm:justify-center justify-normal">
+          <FormField
+            control={form.control}
+            name="model"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Model:</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a property type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectGroup>
+                        {modelOptions.map((option, index) => (
+                          <SelectItem
+                            key={index}
+                            value={option.value}
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="search_depth"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-4 rounded-md border p-4">
+              <FormItem className="flex flex-col gap-4 rounded-md border p-4 w-full">
                 <FormLabel>Search Depth</FormLabel>
                 <FormControl>
                   <RadioGroup
@@ -163,27 +236,11 @@ export function TextareaForm() {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="include_images"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>Include images in the response</FormLabel>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="include_answer"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 w-full">
                 <FormControl>
                   <Checkbox
                     checked={field.value ?? true}
@@ -199,7 +256,7 @@ export function TextareaForm() {
             control={form.control}
             name="max_results"
             render={({ field }) => (
-              <FormItem className="flex flex-col items-start gap-2 rounded-md border p-4">
+              <FormItem className="flex flex-col items-start gap-2 rounded-md border p-4 w-full">
                 <div className="w-full flex flex-row items-center justify-between">
                   <FormLabel>Max Links</FormLabel>
                   <span>{field.value}</span>
@@ -223,7 +280,7 @@ export function TextareaForm() {
             control={form.control}
             name="include_domains"
             render={({ field }) => (
-              <FormItem className="flex flex-col items-start rounded-md border p-4">
+              <FormItem className="flex flex-col items-start rounded-md border p-4 w-full">
                 <FormLabel className="mb-4">Include domains</FormLabel>
                 <FormControl>
                   <Input placeholder="example.com, wikipedia.org" {...field} />
@@ -240,7 +297,7 @@ export function TextareaForm() {
             control={form.control}
             name="exclude_domains"
             render={({ field }) => (
-              <FormItem className="flex flex-col items-start rounded-md border p-4">
+              <FormItem className="flex flex-col items-start rounded-md border p-4 w-full">
                 <FormLabel className="mb-4">Exclude domains</FormLabel>
                 <FormControl>
                   <Input placeholder="example.com, wikipedia.org" {...field} />
