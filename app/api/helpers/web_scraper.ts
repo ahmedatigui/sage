@@ -6,17 +6,28 @@ export async function getWebData(query: string) {
     lang: 'auto',
   });
 
-  const apiUrl = `${process.env.SEARXNG_URL}?${params.toString()}`;
+  try {
+    if (!process.env.SEARXNG_URL) {
+      throw new Error('SEARXNG_URL is not set');
+    }
 
-  const resp = await fetch(apiUrl, {
-    method: 'POST',
-    body: '',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+    const apiUrl = `${process.env.SEARXNG_URL}?${params.toString()}`;
 
-  const data = await resp.json();
+    const resp = await fetch(apiUrl, {
+      method: 'POST',
+      body: '',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  return data;
+    const data = await resp.json();
+
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error);
+      return error.message;
+    }
+  }
 }

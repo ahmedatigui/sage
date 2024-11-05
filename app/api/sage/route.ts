@@ -23,6 +23,7 @@ export async function POST(request: Request) {
     // Prepare response object
     const response = {
       query: webData.query,
+      model: body.model,
       answer: gptData,
       sources: webData.results,
       questions: webData.follow_up_questions,
@@ -31,7 +32,6 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify(response));
   } catch (error) {
     console.error(error);
-    //return new Response(JSON.stringify(error));
     return new Response('Error generating content', { status: 500 });
   }
 }

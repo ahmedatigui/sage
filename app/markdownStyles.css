@@ -6,8 +6,8 @@
   margin: auto;
 }
 
-.markdown-content h1, 
-.markdown-content h2, 
+.markdown-content h1,
+.markdown-content h2,
 .markdown-content h3 {
   color: #2b2b2b;
   margin-top: 1.5em;
@@ -36,7 +36,6 @@
   background-color: #f9f9f9;
 }
 
-
 .markdown-content table {
   border-collapse: collapse;
   width: 100%;
@@ -44,7 +43,7 @@
   background-color: #f9f9f9;
 }
 
-.markdown-content table th, 
+.markdown-content table th,
 .markdown-content table td {
   border: 1px solid #ddd;
   padding: 0.5em;
@@ -54,7 +53,7 @@
   background-color: #f1f3f4;
 }
 
-.markdown-content ul, 
+.markdown-content ul,
 .markdown-content ol {
   margin-left: 1.5em;
 }
@@ -66,8 +65,6 @@
 .markdown-content ol li {
   list-style-type: decimal;
 }
-
-
 
 .markdown-content pre {
   background-color: #f5f5f5;
@@ -110,10 +107,6 @@ pre code {
 .code-block-container pre {
   max-width: 100%;
 }
-
-
-
-
 
 .code-block-container {
   position: relative;

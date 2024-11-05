@@ -27,26 +27,29 @@
     "jotai": "^2.8.4",
     "lucide-react": "^0.400.0",
     "next": "14.2.4",
-    "react": "^18",
-    "react-dom": "^18",
+    "next-themes": "^0.4.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",
     "react-markdown": "^9.0.1",
     "react-syntax-highlighter": "^15.6.1",
     "remark-gfm": "^4.0.0",
+    "sonner": "^1.7.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "eslint": "^8.57.0",
     "eslint-config-next": "14.2.4",
     "eslint-config-prettier": "^9.1.0",
-    "postcss": "^8",
+    "postcss": "^8.4.39",
     "prettier": "3.3.2",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.5.3"
   }
 }
